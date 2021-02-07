@@ -19,12 +19,12 @@ extern crate lazy_static;
 pub mod group;
 pub use group::{create_discriminant, ClassElem, ClassGroup};
 
-mod num;
+pub mod num;
 pub use num::Mpz;
 
 pub mod uint;
 
-mod hash;
+pub mod hash;
 pub use hash::hash_to_prime;
 
 // Get a tuple of mutable reference from a tuple.
