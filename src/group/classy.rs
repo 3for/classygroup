@@ -628,7 +628,7 @@ impl ClassGroup {
         unreduced
     }
 
-    fn id() -> ClassElem {
+    pub fn id() -> ClassElem {
         with_ctx!(|ctx: &mut ClassCtx| {
             let (a,) = mut_tuple_elems!(ctx.op_ctx, 0);
 
@@ -643,7 +643,7 @@ impl ClassGroup {
         })
     }
 
-    fn inv(x: &ClassElem) -> ClassElem {
+    pub fn inv(x: &ClassElem) -> ClassElem {
         let mut ret = ClassElem::default();
         ret.a.set(&x.a);
         ret.b.neg(&x.b);
