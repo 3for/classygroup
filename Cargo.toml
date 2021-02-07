@@ -16,7 +16,16 @@ bacteria = "0.0.8"
 bit-vec = "0.5"
 anyhow = "1.0"
 lazy_static = "1.2.0"
-mohan = "0.0.*"
+
+[dependencies.mohan]
+optional = true
+version = "0.0.*"
+
+[dependencies.serde]
+optional = true
+version = "=1.0.118"
+default-features = false
+features = ["std", "derive"]
 
 [dev-dependencies]
 criterion = ">=0.2"
@@ -36,3 +45,7 @@ harness = false
 name = "uint"
 path = "bench/uint.rs"
 harness = false
+
+[features]
+default = ["mohan_serde"]
+mohan_serde = ["serde", "mohan"]
