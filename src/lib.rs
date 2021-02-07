@@ -16,7 +16,7 @@
 #[macro_use]
 extern crate lazy_static;
 
-mod group;
+pub mod group;
 pub use group::{create_discriminant, ClassElem, ClassGroup};
 
 mod num;
