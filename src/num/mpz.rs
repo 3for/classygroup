@@ -9,6 +9,7 @@ use std::os::raw::{c_int, c_ulong};
 use std::slice;
 use std::str::FromStr;
 use std::ffi::c_void;
+use rug::Integer;
 
 #[derive(Debug)]
 #[cfg_attr(repr_transparent, repr(transparent))]
@@ -83,6 +84,12 @@ impl From<u64> for Mpz {
         unsafe { gmp::mpz_set_ui(&mut ret.inner, x) };
         ret
     }
+}
+
+impl From<Integer> for Mpz {
+  fn from(x: Integer) -> Self {
+    Mpz::from_str(&x.to_string_radix(10)).unwrap()
+  }
 }
 
 impl FromStr for Mpz {
