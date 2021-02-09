@@ -48,6 +48,25 @@ pub fn hash_to_prime_Mpz(t: &[u8]) -> Mpz {
     }
 }
 
+pub fn hash_to_prime_bytes(t: &[u8]) -> [u8; 32] {
+    let mut counter = 0_u64;
+    loop {
+        let mut buf = Vec::new();
+        buf.extend_from_slice(t);
+        buf.extend_from_slice(&counter.to_le_bytes());
+
+        let hash = blake256(&buf);
+        let mut hash = hash.to_bytes();
+        // Make the candidate prime odd. This gives ~7% performance gain on a 2018 Macbook Pro.
+        hash[0] |= 1;
+        let candidate_prime = Mpz::from_bytes(&hash);
+        if candidate_prime.is_prime(50) { //resonable value is between 15 
+            return hash;
+        }
+        counter += 1;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -81,6 +100,18 @@ mod tests {
         assert_ne!(b_1, b_2);
         let m_1 = hash_to_prime_Mpz(b_1); //Mpz
         let m_2 = hash_to_prime_Mpz(b_2);
+        assert_ne!(m_1, m_2);
+        assert!(m_1.is_prime(50));
+        assert!(m_2.is_prime(110));
+    }
+
+    #[test]
+    fn test_hash_to_prime_bytes() {
+        let b_1 = b"boom i got ur boyfriend";
+        let b_2 = b"boom i got ur boyfriene";
+        assert_ne!(b_1, b_2);
+        let m_1 = Mpz::from_bytes(&hash_to_prime_bytes(b_1)); //Mpz
+        let m_2 = Mpz::from_bytes(&hash_to_prime_bytes(b_2));
         assert_ne!(m_1, m_2);
         assert!(m_1.is_prime(50));
         assert!(m_2.is_prime(110));
