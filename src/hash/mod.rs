@@ -40,9 +40,9 @@ pub fn hash_to_prime_Mpz(t: &[u8]) -> Mpz {
         let mut hash = hash.to_bytes();
         // Make the candidate prime odd. This gives ~7% performance gain on a 2018 Macbook Pro.
         hash[0] |= 1;
-        let candidate_prime = u256(hash);
-        if primality::is_prob_prime(&candidate_prime) {
-            return Mpz::from_bytes(&hash);
+        let candidate_prime = Mpz::from_bytes(&hash);
+        if candidate_prime.is_prime(50) { //resonable value is between 15 
+            return candidate_prime;
         }
         counter += 1;
     }
@@ -72,5 +72,17 @@ mod tests {
         let mut digits2 = [0; 4];
         h_2.write_digits(&mut digits2, Order::Lsf);
         assert!(primality::is_prob_prime(&u256(digits2)));
+    }
+
+    #[test]
+    fn test_hash_to_prime_mpz() {
+        let b_1 = b"boom i got ur boyfriend";
+        let b_2 = b"boom i got ur boyfriene";
+        assert_ne!(b_1, b_2);
+        let m_1 = hash_to_prime_Mpz(b_1); //Mpz
+        let m_2 = hash_to_prime_Mpz(b_2);
+        assert_ne!(m_1, m_2);
+        assert!(m_1.is_prime(50));
+        assert!(m_2.is_prime(110));
     }
 }
