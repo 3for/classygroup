@@ -6,6 +6,7 @@ use rug::integer::Order;
 use rug::Integer;
 use std::hash::Hash;
 pub mod primality;
+use crate::num::Mpz;
 
 /// Hashes t with an incrementing counter (with blake2b) until a prime is found.
 pub fn hash_to_prime(t: &[u8]) -> Integer {
@@ -22,6 +23,26 @@ pub fn hash_to_prime(t: &[u8]) -> Integer {
         let candidate_prime = u256(hash);
         if primality::is_prob_prime(&candidate_prime) {
             return Integer::from(candidate_prime);
+        }
+        counter += 1;
+    }
+}
+
+/// Hashes t with an incrementing counter (with blake2b) until a prime is found.
+pub fn hash_to_prime_Mpz(t: &[u8]) -> Mpz {
+    let mut counter = 0_u64;
+    loop {
+        let mut buf = Vec::new();
+        buf.extend_from_slice(t);
+        buf.extend_from_slice(&counter.to_le_bytes());
+
+        let hash = blake256(&buf);
+        let mut hash = hash.to_bytes();
+        // Make the candidate prime odd. This gives ~7% performance gain on a 2018 Macbook Pro.
+        hash[0] |= 1;
+        let candidate_prime = u256(hash);
+        if primality::is_prob_prime(&candidate_prime) {
+            return Mpz::from_bytes(&hash);
         }
         counter += 1;
     }
